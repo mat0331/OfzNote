@@ -1,0 +1,128 @@
+/**
+ * Dark Theme
+ */
+
+:root {
+    /* Primary Colors */
+    --primary-color: #0d6efd;
+    --primary-hover: #0b5ed7;
+    --primary-text: #ffffff;
+
+    /* Background Colors */
+    --sidebar-bg: #1a1d23;
+    --editor-bg: #0d1117;
+    --modal-bg: #1a1d23;
+    --input-bg: #0d1117;
+    --hover-bg: #262b35;
+    --active-bg: #1c3d5a;
+
+    /* Text Colors */
+    --text-color: #e6edf3;
+    --meta-color: #8b949e;
+    --preview-color: #c9d1d9;
+
+    /* Border Colors */
+    --border-color: #30363d;
+
+    /* Secondary Colors */
+    --secondary-color: #262b35;
+    --secondary-hover: #30363d;
+
+    /* Status Colors */
+    --success-color: #3fb950;
+    --success-bg: #1a3a24;
+    --warning-color: #d29922;
+    --warning-bg: #3a2e1a;
+    --danger-color: #f85149;
+    --danger-bg: #3a1e1e;
+
+    /* Scrollbar */
+    --scrollbar-color: #30363d;
+    --scrollbar-hover: #484f58;
+
+    /* Search highlight */
+    --search-highlight-color: rgba(255, 235, 59, 0.5);
+    --search-highlight-current-color: rgba(255, 152, 0, 0.7);
+
+    /* Icon color */
+    --icon-color: #e6edf3;
+}
+
+body {
+    background: var(--editor-bg);
+    color: var(--text-color);
+}
+
+/* アイコンの色を明示的に設定 */
+.btn-icon i,
+.btn i,
+i.fas,
+i.far {
+    color: var(--icon-color);
+}
+
+/* サイドバーフッターのアイコン */
+.sidebar-footer .btn-icon i {
+    color: var(--icon-color);
+}
+
+/* タブのアイコン */
+.sidebar-tabs .tab-btn i {
+    color: var(--icon-color);
+}
+
+.sidebar-tabs .tab-btn.active i {
+    color: var(--primary-color);
+}
+
+/* エディタアクションのアイコン */
+.editor-actions .btn-icon i {
+    color: var(--icon-color);
+}
+
+/* 検索アイコン */
+.search-icon {
+    color: var(--icon-color);
+}
+
+/* フォルダアクションボタン */
+.folder-action-btn {
+    color: var(--icon-color);
+}
+
+.folder-action-btn:hover {
+    color: var(--primary-text);
+}
+
+.folder-action-btn:last-child:hover {
+    color: white;
+}
+
+/* メモアイテムのアクションボタン */
+.note-item-action-btn {
+    color: var(--icon-color);
+}
+
+.note-item-action-btn:hover {
+    background: var(--danger-color);
+    color: white;
+}
+
+/* ゴミ箱のアクションボタン */
+.restore-btn {
+    color: var(--icon-color);
+}
+
+.permanent-delete-btn {
+    color: var(--icon-color);
+}
+
+.restore-btn:hover {
+    background: var(--success-color) !important;
+    color: white !important;
+}
+
+.permanent-delete-btn:hover {
+    background: var(--danger-color) !important;
+    color: white !important;
+}

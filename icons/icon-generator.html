@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OffNote Icon Generator</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            padding: 40px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #333;
+        }
+        .icon-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin: 30px 0;
+        }
+        .icon-item {
+            text-align: center;
+        }
+        canvas {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .btn {
+            padding: 12px 24px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        .btn:hover {
+            background: #0056b3;
+        }
+        .instructions {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>OffNote Icon Generator</h1>
+    <p>このツールでPWAアイコンを生成できます。各サイズのアイコンを右クリックして保存してください。</p>
+
+    <div class="icon-preview" id="icon-preview"></div>
+
+    <button class="btn" onclick="generateIcons()">アイコンを生成</button>
+    <button class="btn" onclick="downloadAllIcons()">全てダウンロード</button>
+
+    <div class="instructions">
+        <h3>使い方</h3>
+        <ol>
+            <li>「アイコンを生成」ボタンをクリック</li>
+            <li>各アイコンを右クリックして「名前を付けて画像を保存」</li>
+            <li>ファイル名は表示されている通り（例: icon-192.png）</li>
+            <li>全てのアイコンを icons/ フォルダに保存</li>
+        </ol>
+    </div>
+
+    <script>
+        const sizes = [72, 96, 128, 144, 152, 192, 384, 512];
+
+        function drawIcon(canvas, size) {
+            const ctx = canvas.getContext('2d');
+            const padding = size * 0.15;
+
+            // 背景
+            ctx.fillStyle = '#007bff';
+            ctx.fillRect(0, 0, size, size);
+
+            // メモ帳のアイコンを描画
+            ctx.fillStyle = '#ffffff';
+
+            // 紙の部分
+            const paperX = padding;
+            const paperY = padding;
+            const paperWidth = size - padding * 2;
+            const paperHeight = size - padding * 2;
+
+            ctx.fillRect(paperX, paperY, paperWidth, paperHeight);
+
+            // 折り目
+            ctx.fillStyle = '#e9ecef';
+            const foldSize = paperWidth * 0.25;
+            ctx.beginPath();
+            ctx.moveTo(paperX + paperWidth - foldSize, paperY);
+            ctx.lineTo(paperX + paperWidth, paperY + foldSize);
+            ctx.lineTo(paperX + paperWidth, paperY);
+            ctx.closePath();
+            ctx.fill();
+
+            // 線
+            ctx.strokeStyle = '#007bff';
+            ctx.lineWidth = size * 0.02;
+            const lineSpacing = paperHeight * 0.15;
+            const lineMargin = padding * 2;
+
+            for (let i = 1; i <= 4; i++) {
+                const y = paperY + lineMargin + (i * lineSpacing);
+                ctx.beginPath();
+                ctx.moveTo(paperX + lineMargin, y);
+                ctx.lineTo(paperX + paperWidth - lineMargin, y);
+                ctx.stroke();
+            }
+        }
+
+        function generateIcons() {
+            const container = document.getElementById('icon-preview');
+            container.innerHTML = '';
+
+            sizes.forEach(size => {
+                const div = document.createElement('div');
+                div.className = 'icon-item';
+
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                canvas.id = `icon-${size}`;
+
+                drawIcon(canvas, size);
+
+                const label = document.createElement('div');
+                label.textContent = `icon-${size}.png (${size}x${size})`;
+                label.style.marginTop = '8px';
+                label.style.fontSize = '14px';
+
+                div.appendChild(canvas);
+                div.appendChild(label);
+                container.appendChild(div);
+            });
+        }
+
+        function downloadAllIcons() {
+            sizes.forEach((size, index) => {
+                setTimeout(() => {
+                    const canvas = document.getElementById(`icon-${size}`);
+                    if (canvas) {
+                        canvas.toBlob(blob => {
+                            const url = URL.createObjectURL(blob);
+                            const a = document.createElement('a');
+                            a.href = url;
+                            a.download = `icon-${size}.png`;
+                            a.click();
+                            URL.revokeObjectURL(url);
+                        });
+                    }
+                }, index * 200);
+            });
+        }
+
+        // ページ読み込み時に自動生成
+        window.onload = () => {
+            generateIcons();
+        };
+    </script>
+</body>
+</html>

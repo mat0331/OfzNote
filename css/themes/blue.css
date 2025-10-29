@@ -1,0 +1,109 @@
+/**
+ * Blue Theme
+ */
+
+:root {
+    /* Primary Colors */
+    --primary-color: #2196f3;
+    --primary-hover: #1976d2;
+    --primary-text: #ffffff;
+
+    /* Background Colors */
+    --sidebar-bg: #e3f2fd;
+    --editor-bg: #f5f9ff;
+    --modal-bg: #ffffff;
+    --input-bg: #ffffff;
+    --hover-bg: #bbdefb;
+    --active-bg: #90caf9;
+
+    /* Text Colors */
+    --text-color: #1a237e;
+    --meta-color: #5c6bc0;
+    --preview-color: #3f51b5;
+
+    /* Border Colors */
+    --border-color: #90caf9;
+
+    /* Secondary Colors */
+    --secondary-color: #64b5f6;
+    --secondary-hover: #42a5f5;
+
+    /* Status Colors */
+    --success-color: #4caf50;
+    --success-bg: #e8f5e9;
+    --warning-color: #ff9800;
+    --warning-bg: #fff3e0;
+    --danger-color: #f44336;
+    --danger-bg: #ffebee;
+
+    /* Scrollbar */
+    --scrollbar-color: #90caf9;
+    --scrollbar-hover: #64b5f6;
+
+    /* Search highlight */
+    --search-highlight-color: rgba(255, 235, 59, 0.5);
+    --search-highlight-current-color: rgba(255, 152, 0, 0.7);
+
+    /* Icon color */
+    --icon-color: #1a237e;
+}
+
+body {
+    background: var(--editor-bg);
+    color: var(--text-color);
+}
+
+/* アイコンの色を明示的に設定 */
+.btn-icon i,
+.btn i,
+i.fas,
+i.far {
+    color: var(--icon-color);
+}
+
+.sidebar-footer .btn-icon i {
+    color: var(--icon-color);
+}
+
+.sidebar-tabs .tab-btn i {
+    color: var(--icon-color);
+}
+
+.sidebar-tabs .tab-btn.active i {
+    color: var(--primary-color);
+}
+
+.editor-actions .btn-icon i {
+    color: var(--icon-color);
+}
+
+.search-icon {
+    color: var(--icon-color);
+}
+
+.folder-action-btn {
+    color: var(--icon-color);
+}
+
+.folder-action-btn:hover {
+    color: var(--primary-text);
+}
+
+.note-item-action-btn {
+    color: var(--icon-color);
+}
+
+.note-item-action-btn:hover {
+    background: var(--danger-color);
+    color: white;
+}
+
+.restore-btn:hover {
+    background: var(--success-color) !important;
+    color: white !important;
+}
+
+.permanent-delete-btn:hover {
+    background: var(--danger-color) !important;
+    color: white !important;
+}

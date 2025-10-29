@@ -1,0 +1,1203 @@
+/**
+ * Extensions CSS
+ * 拡張機能用のスタイル
+ */
+
+/* サイドバータブ */
+.sidebar-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    padding: 0 8px;
+}
+
+.tab-btn {
+    flex: 1;
+    padding: 10px 8px;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    color: var(--meta-color);
+}
+
+.tab-btn:hover {
+    background: var(--hover-bg);
+}
+
+.tab-btn.active {
+    border-bottom-color: var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+/* タブコンテンツ */
+.tab-content {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.tab-content.active {
+    display: flex;
+}
+
+/* フォルダリスト */
+.folder-list {
+    list-style: none;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.folder-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.2s;
+}
+
+.folder-item:hover {
+    background: var(--hover-bg);
+}
+
+.folder-item.active {
+    background: var(--active-bg);
+}
+
+.folder-color {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
+.folder-name {
+    flex: 1;
+    font-size: 14px;
+}
+
+.folder-count {
+    font-size: 12px;
+    color: var(--meta-color);
+    margin-right: 4px;
+}
+
+.folder-actions {
+    display: none;
+    gap: 4px;
+}
+
+.folder-item:hover .folder-actions {
+    display: flex;
+}
+
+.folder-action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+    color: var(--meta-color);
+    transition: all 0.2s;
+    font-size: 12px;
+}
+
+.folder-action-btn:hover {
+    background: var(--primary-color);
+    color: var(--primary-text);
+}
+
+.folder-action-btn:last-child:hover {
+    background: var(--danger-color);
+    color: white;
+}
+
+.btn-icon-small {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.btn-icon-small:hover {
+    background: var(--hover-bg);
+}
+
+/* タグクラウド */
+.tag-cloud {
+    padding: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    overflow-y: auto;
+}
+
+.tag-item {
+    padding: 6px 12px;
+    background: var(--hover-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.tag-item:hover {
+    background: var(--primary-color);
+    color: var(--primary-text);
+    border-color: var(--primary-color);
+}
+
+.tag-count {
+    font-size: 11px;
+    opacity: 0.7;
+}
+
+/* タグ表示エリア */
+.note-tags-display {
+    padding: 8px 40px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 32px;
+}
+
+.note-tag-chip {
+    padding: 4px 10px;
+    background: var(--primary-color);
+    color: var(--primary-text);
+    border-radius: 12px;
+    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.note-tag-chip .remove-tag {
+    cursor: pointer;
+    font-size: 14px;
+    opacity: 0.8;
+}
+
+.note-tag-chip .remove-tag:hover {
+    opacity: 1;
+}
+
+/* マークダウンプレビュー */
+.editor-wrapper.split-view {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--border-color);
+}
+
+.markdown-preview {
+    display: none;
+    padding: 40px 20px;
+    overflow-y: auto;
+    background: var(--editor-bg);
+    color: var(--text-color);
+}
+
+.markdown-preview.visible {
+    display: block;
+}
+
+.markdown-preview h1 {
+    font-size: 32px;
+    margin: 24px 0 16px;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 8px;
+}
+
+.markdown-preview h2 {
+    font-size: 24px;
+    margin: 20px 0 12px;
+}
+
+.markdown-preview h3 {
+    font-size: 20px;
+    margin: 16px 0 8px;
+}
+
+.markdown-preview p {
+    margin: 12px 0;
+    line-height: 1.8;
+}
+
+.markdown-preview code {
+    background: var(--hover-bg);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 14px;
+}
+
+.markdown-preview a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.markdown-preview a:hover {
+    text-decoration: underline;
+}
+
+.markdown-preview li {
+    margin: 6px 0 6px 24px;
+}
+
+/* 履歴リスト */
+.history-list {
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.history-item {
+    padding: 16px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.history-item:hover {
+    background: var(--hover-bg);
+}
+
+.history-item-time {
+    font-size: 12px;
+    color: var(--meta-color);
+    margin-bottom: 6px;
+}
+
+.history-item-preview {
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.history-item-diff {
+    font-size: 12px;
+    color: var(--meta-color);
+    margin-top: 4px;
+}
+
+/* タグダイアログ */
+.current-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 12px;
+    background: var(--hover-bg);
+    border-radius: 8px;
+    min-height: 50px;
+}
+
+.current-tag-chip {
+    padding: 6px 12px;
+    background: var(--primary-color);
+    color: var(--primary-text);
+    border-radius: 16px;
+    font-size: 13px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.current-tag-chip .remove {
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.suggested-tags {
+    margin-top: 20px;
+}
+
+.suggested-tags h4 {
+    font-size: 14px;
+    margin-bottom: 10px;
+    color: var(--meta-color);
+}
+
+.suggested-tag-item {
+    display: inline-block;
+    padding: 6px 12px;
+    margin: 4px;
+    background: var(--hover-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.suggested-tag-item:hover {
+    background: var(--primary-color);
+    color: var(--primary-text);
+}
+
+/* フォルダ選択リスト */
+.folder-select-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.folder-select-item {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+
+.folder-select-item:hover {
+    background: var(--hover-bg);
+}
+
+.folder-select-item.selected {
+    background: var(--active-bg);
+}
+
+.folder-select-item .folder-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+}
+
+/* 正規表現検索ダイアログ */
+.regex-flags {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 12px 0;
+}
+
+.regex-flags label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.regex-result {
+    padding: 12px;
+    margin: 12px 0;
+    border-radius: 6px;
+    font-size: 14px;
+    display: none;
+}
+
+.regex-result.success {
+    background: var(--success-bg);
+    color: var(--success-color);
+}
+
+.regex-result.error {
+    background: var(--danger-bg);
+    color: var(--danger-color);
+}
+
+/* テーマエディタ */
+.theme-colors {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+}
+
+.theme-colors label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+}
+
+.theme-color-input {
+    width: 100%;
+    height: 50px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* ボタングループ */
+.button-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.button-group .btn {
+    flex: 1;
+}
+
+/* 入力フィールド */
+.input-text {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-size: 14px;
+    margin-top: 8px;
+}
+
+.input-text:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* モーダルサイズバリエーション */
+.modal-small .modal-content {
+    max-width: 500px;
+}
+
+/* お気に入りアイコン */
+#favorite-icon.active {
+    color: #ffc107;
+}
+
+.favorite-star-small {
+    font-size: 12px;
+    color: #ffc107;
+    margin-right: 4px;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+    .editor-wrapper.split-view {
+        grid-template-columns: 1fr;
+    }
+
+    .theme-colors {
+        grid-template-columns: 1fr;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .sidebar-tabs {
+        padding: 0 4px;
+    }
+
+    .tab-btn {
+        font-size: 12px;
+        padding: 8px 4px;
+    }
+}
+
+/* アイコンサイズ調整 */
+.editor-actions .btn-icon {
+    font-size: 18px;
+}
+
+/* ヘルプダイアログ */
+.help-section {
+    margin-bottom: 32px;
+}
+
+.help-section h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.help-section h3 i {
+    color: var(--primary-color);
+}
+
+.shortcut-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.shortcut-table tr {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.shortcut-table td {
+    padding: 12px 8px;
+}
+
+.shortcut-table td:first-child {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+kbd {
+    display: inline-block;
+    padding: 3px 8px;
+    font-size: 12px;
+    line-height: 1;
+    color: var(--text-color);
+    background: var(--hover-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: 0 1px 0 var(--border-color);
+    font-family: monospace;
+}
+
+.help-list {
+    list-style: none;
+    padding: 0;
+}
+
+.help-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.help-list li:last-child {
+    border-bottom: none;
+}
+
+.help-list li strong {
+    color: var(--primary-color);
+}
+
+@media (max-width: 480px) {
+    .editor-actions .btn-icon .icon {
+        font-size: 16px;
+    }
+
+    .editor-actions {
+        flex-wrap: wrap;
+    }
+
+    .shortcut-table td {
+        padding: 8px 4px;
+        font-size: 13px;
+    }
+}
+
+/* 検索モード切り替え */
+.search-mode-toggle {
+    margin-bottom: 16px;
+    padding: 12px;
+    background: var(--hover-bg);
+    border-radius: 8px;
+}
+
+.search-mode-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text-color);
+    cursor: pointer;
+    user-select: none;
+}
+
+.search-mode-label input[type="checkbox"] {
+    cursor: pointer;
+    width: 18px;
+    height: 18px;
+}
+
+.search-mode-label:hover {
+    color: var(--primary-color);
+}
+
+/* インライン検索バー */
+.inline-search-bar {
+    display: none;
+    background: var(--hover-bg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 8px 16px;
+    animation: slideDown 0.2s ease;
+}
+
+.inline-search-bar.active {
+    display: block;
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.search-row,
+.replace-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.replace-row {
+    margin-top: 8px;
+}
+
+.inline-search-input {
+    flex: 1;
+    padding: 6px 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--input-bg);
+    color: var(--text-color);
+    font-size: 13px;
+}
+
+.inline-search-input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.inline-search-option {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    color: var(--text-color);
+    cursor: pointer;
+    user-select: none;
+    white-space: nowrap;
+}
+
+.inline-search-option input[type="checkbox"] {
+    cursor: pointer;
+}
+
+.search-result-count {
+    font-size: 12px;
+    color: var(--meta-color);
+    white-space: nowrap;
+}
+
+.btn-icon-small {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    border-radius: 4px;
+    color: var(--text-color);
+    transition: all 0.2s;
+    font-size: 14px;
+}
+
+.btn-icon-small:hover {
+    background: var(--primary-color);
+    color: var(--primary-text);
+}
+
+.btn-secondary-small,
+.btn-primary-small {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    transition: all 0.2s;
+}
+
+.btn-secondary-small {
+    background: var(--secondary-color);
+    color: var(--text-color);
+}
+
+.btn-secondary-small:hover {
+    background: var(--secondary-hover);
+}
+
+.btn-primary-small {
+    background: var(--primary-color);
+    color: var(--primary-text);
+}
+
+.btn-primary-small:hover {
+    background: var(--primary-hover);
+}
+
+/* 検索ハイライト */
+.search-highlight {
+    background-color: yellow;
+    color: black;
+}
+
+.search-highlight-current {
+    background-color: orange;
+    color: black;
+}
+
+/* 検索ハイライトレイヤー */
+.editor-wrapper {
+    position: relative;
+}
+
+.search-highlight-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 40px;
+    overflow: hidden;
+    pointer-events: none;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: transparent;
+    z-index: 1;
+}
+
+.search-highlight-layer mark {
+    background-color: var(--search-highlight-color, rgba(255, 255, 0, 0.5));
+    color: transparent;
+}
+
+.search-highlight-layer mark.current {
+    background-color: var(--search-highlight-current-color, rgba(255, 165, 0, 0.7));
+}
+
+.note-editor {
+    position: relative;
+    z-index: 2;
+    background: transparent;
+}
+
+/* フォルダグループ階層表示 */
+.folder-group-header {
+    padding: 12px 16px;
+    background: var(--hover-bg);
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-weight: 600;
+    font-size: 14px;
+    transition: background 0.2s;
+    user-select: none;
+}
+
+.folder-group-header:hover {
+    background: var(--active-bg);
+}
+
+.folder-toggle-icon {
+    font-size: 12px;
+    color: var(--meta-color);
+    transition: transform 0.2s;
+}
+
+.folder-group-title {
+    flex: 1;
+    color: var(--text-color);
+}
+
+.folder-group-count {
+    font-size: 12px;
+    color: var(--meta-color);
+    font-weight: normal;
+}
+
+.folder-group-notes {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.note-sublist {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.note-sublist .note-item {
+    margin-left: 32px;
+    padding-left: 13px; /* 16px - 3px (border分) */
+    border-left: 3px solid var(--border-color);
+}
+
+/* フォルダ内のアクティブなメモのborder-leftをプライマリカラーに */
+.note-sublist .note-item.active {
+    border-left-color: var(--primary-color);
+}
+
+/* エディター専用のモダンなスクロールバースタイル */
+.editor-wrapper::-webkit-scrollbar {
+    width: 10px;
+}
+
+.editor-wrapper::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+    margin: 4px 0;
+}
+
+.editor-wrapper::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--primary-color), var(--primary-hover));
+    border-radius: 10px;
+    border: 2px solid var(--editor-bg);
+    background-clip: padding-box;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.editor-wrapper::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--primary-hover), var(--primary-color));
+    border: 1px solid var(--editor-bg);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transform: scaleX(1.1);
+}
+
+/* メモ一覧コントロール */
+.note-list-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* フォルダグループアクション */
+.folder-group-actions {
+    display: none;
+    gap: 4px;
+    margin-left: auto;
+}
+
+.folder-group-header:hover .folder-group-actions {
+    display: flex;
+}
+
+.folder-action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 4px;
+    color: var(--meta-color);
+    transition: all 0.2s;
+    font-size: 12px;
+}
+
+.folder-action-btn:hover {
+    background: var(--primary-color);
+    color: var(--primary-text);
+}
+
+.folder-action-btn:last-child:hover {
+    background: var(--danger-color);
+    color: white;
+}
+
+
+/* フォルダ移動セレクトボックス */
+.folder-move-select {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    background: var(--bg-secondary);
+    color: var(--text-color);
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.folder-move-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* ドラッグ&ドロップのスタイル */
+.note-item[draggable='true'] {
+    cursor: pointer;
+}
+
+.note-item[draggable='true']:active {
+    cursor: move;
+}
+
+.note-item.dragging {
+    opacity: 0.5;
+    background: var(--hover-bg);
+}
+
+.folder-group-header.drag-over {
+    background: var(--primary-color);
+    color: var(--primary-text);
+    border-left: 4px solid var(--primary-color);
+}
+
+.folder-group-header.drag-over .folder-toggle-icon {
+    filter: brightness(1.5);
+}
+
+/* 保存状態のスタイル（note-meta内） */
+.save-status {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.save-status-saved {
+    color: var(--success-color, #28a745);
+}
+
+.save-status-saving {
+    color: var(--primary-color, #007bff);
+}
+
+.save-status-unsaved {
+    color: var(--warning-color, #ffc107);
+}
+
+.save-status-error {
+    color: var(--danger-color, #dc3545);
+}
+
+/* タグカラーボタンのスタイル */
+.tag-color-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    padding: 4px 6px;
+    margin-left: 4px;
+    border-radius: 4px;
+    font-size: 12px;
+    opacity: 0.6;
+    transition: all 0.2s ease;
+}
+
+.tag-color-btn:hover {
+    opacity: 1;
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+}
+
+.tag-item:hover .tag-color-btn {
+    opacity: 0.8;
+}
+
+/* タグ候補のスタイル */
+.tag-suggestions {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--editor-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    max-height: 200px;
+    overflow-y: auto;
+    z-index: 100;
+    margin-top: 4px;
+}
+
+.tag-suggestion-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tag-suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.tag-suggestion-item:hover {
+    background: var(--hover-bg);
+}
+
+.tag-suggestion-count {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-left: 8px;
+}
+
+/* tag-input-containerに相対位置指定が必要 */
+.tag-input-container {
+    position: relative;
+}
+
+/* サイドバー個別テーマ用のスタイル */
+/* ライトテーマ */
+#sidebar[data-theme="light"] {
+    --sidebar-bg: #f8f9fa;
+    --text-color: #212529;
+    --meta-color: #6c757d;
+    --border-color: #dee2e6;
+    --hover-bg: #e9ecef;
+    --active-bg: #d4e7f7;
+    --icon-color: #212529;
+}
+
+/* ダークテーマ */
+#sidebar[data-theme="dark"] {
+    --sidebar-bg: #1a1d23;
+    --text-color: #e6edf3;
+    --meta-color: #8b949e;
+    --border-color: #30363d;
+    --hover-bg: #262b35;
+    --active-bg: #1c3d5a;
+    --icon-color: #e6edf3;
+}
+
+/* ブルーテーマ */
+#sidebar[data-theme="blue"] {
+    --sidebar-bg: #e3f2fd;
+    --text-color: #1a237e;
+    --meta-color: #5c6bc0;
+    --border-color: #90caf9;
+    --hover-bg: #bbdefb;
+    --active-bg: #90caf9;
+    --icon-color: #1a237e;
+}
+
+#sidebar[data-theme] {
+    background: var(--sidebar-bg);
+    color: var(--text-color);
+}
+
+/* サイドバー内のアイコンにサイドバーテーマのアイコン色を適用 */
+#sidebar[data-theme] .btn-icon i,
+#sidebar[data-theme] .sidebar-footer .btn-icon i,
+#sidebar[data-theme] .sidebar-tabs .tab-btn i,
+#sidebar[data-theme] .search-icon,
+#sidebar[data-theme] .folder-action-btn,
+#sidebar[data-theme] .note-item-action-btn,
+#sidebar[data-theme] .restore-btn,
+#sidebar[data-theme] .permanent-delete-btn {
+    color: var(--icon-color);
+}
+
+/* エディターヘッダーのフォント設定のテキスト色を固定 */
+.editor-header .font-control,
+.editor-header #header-font-family,
+.editor-header #header-font-size {
+    color: #000000 !important;
+    background: #ffffff !important;
+    border-color: #dee2e6 !important;
+}
+
+.editor-header .font-control option,
+.editor-header #header-font-family option,
+.editor-header #header-font-size option {
+    color: #000000 !important;
+    background: #ffffff !important;
+}
+
+/* サイドバーテーマボタンのスタイルをエディターテーマと統一 */
+.sidebar-theme-btn {
+    padding: 10px 16px;
+    margin: 4px;
+    border: 2px solid var(--border-color);
+    border-radius: 6px;
+    background: var(--editor-bg);
+    color: var(--text-color);
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.sidebar-theme-btn:hover {
+    background: var(--hover-bg);
+    border-color: var(--primary-color);
+    transform: translateY(-2px);
+}
+
+.sidebar-theme-btn.active {
+    background: var(--primary-color);
+    color: var(--primary-text);
+    border-color: var(--primary-color);
+}
+
+/* 設定画面の色を固定（テーマの影響を受けないようにする） */
+.modal {
+    background: rgba(0, 0, 0, 0.5) !important;
+}
+
+.modal-content {
+    background: #ffffff !important;
+    color: #212529 !important;
+}
+
+.modal-header,
+.modal-body,
+.modal-footer {
+    background: #ffffff !important;
+    color: #212529 !important;
+    border-color: #dee2e6 !important;
+}
+
+.modal h2,
+.modal h3,
+.modal h4,
+.modal label,
+.modal p,
+.modal span,
+.modal div {
+    color: #212529 !important;
+}
+
+.modal input[type="text"],
+.modal input[type="number"],
+.modal input[type="range"],
+.modal input[type="color"],
+.modal select,
+.modal textarea {
+    background: #ffffff !important;
+    color: #212529 !important;
+    border-color: #ced4da !important;
+}
+
+.modal input[type="text"]::placeholder,
+.modal textarea::placeholder {
+    color: #6c757d !important;
+}
+
+.modal button:not(.theme-btn):not(.sidebar-theme-btn) {
+    color: #212529 !important;
+}
+
+.modal .btn-close {
+    color: #6c757d !important;
+}
+
+.modal .settings-section {
+    background: #f8f9fa !important;
+    border-color: #dee2e6 !important;
+}
+
+/* モーダル内のスクロールバーも固定 */
+.modal-body::-webkit-scrollbar-thumb {
+    background: #ced4da !important;
+}
+
+.modal-body::-webkit-scrollbar-thumb:hover {
+    background: #adb5bd !important;
+}

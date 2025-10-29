@@ -1,0 +1,601 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="オフライン対応テキストエディタ">
+    <meta name="theme-color" content="#ffffff">
+    <title>OfzNote - オフラインメモ</title>
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="manifest.json">
+
+    <!-- Favicon -->
+    <!-- <link rel="icon" type="image/png" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png"> -->
+
+    <!-- Markdown Library (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/extensions.css">
+    <link rel="stylesheet" href="css/themes/light.css" id="theme-stylesheet">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1 class="app-title">OfzNote</h1>
+            <button class="btn-icon" id="toggle-sidebar" title="サイドバーを閉じる">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+
+        <div class="sidebar-actions">
+            <button class="btn btn-primary" id="new-note">
+                <i class="fas fa-plus"></i> 新規メモ
+            </button>
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="検索..." class="search-input">
+                <i class="fas fa-search search-icon"></i>
+            </div>
+        </div>
+
+        <!-- フォルダ/フィルター タブ -->
+        <div class="sidebar-tabs">
+            <button class="tab-btn active" data-tab="all"><i class="fas fa-list"></i></button>
+            <button class="tab-btn" data-tab="favorites"><i class="fas fa-star"></i></button>
+            <button class="tab-btn" data-tab="tags"><i class="fas fa-tags"></i></button>
+            <button class="tab-btn" data-tab="trash"><i class="fas fa-trash"></i></button>
+        </div>
+
+        <!-- 全メモビュー -->
+        <div class="tab-content active" id="tab-all">
+            <div class="note-list-header">
+                <span>メモ一覧</span>
+                <div class="note-list-controls">
+                    <button class="btn-icon-small" id="new-folder" title="新規フォルダ">
+                        <i class="fas fa-folder-plus"></i>
+                    </button>
+                    <select id="sort-select" class="sort-select">
+                        <option value="updated">更新順</option>
+                        <option value="created">作成順</option>
+                        <option value="title">タイトル順</option>
+                    </select>
+                </div>
+            </div>
+            <ul class="note-list" id="note-list">
+                <!-- メモ一覧が動的に追加されます -->
+            </ul>
+        </div>
+
+        <!-- お気に入りビュー -->
+        <div class="tab-content" id="tab-favorites">
+            <div class="note-list-header">
+                <span>お気に入り</span>
+            </div>
+            <ul class="note-list" id="favorites-list">
+                <!-- お気に入りメモが動的に追加されます -->
+            </ul>
+        </div>
+
+        <!-- タグビュー -->
+        <div class="tab-content" id="tab-tags">
+            <div class="note-list-header">
+                <span>タグ</span>
+            </div>
+            <div class="tag-cloud" id="tag-cloud">
+                <!-- タグクラウドが動的に追加されます -->
+            </div>
+        </div>
+
+        <!-- ゴミ箱ビュー -->
+        <div class="tab-content" id="tab-trash">
+            <div class="note-list-header">
+                <span>ゴミ箱</span>
+            </div>
+            <ul class="note-list" id="trash-list">
+                <!-- 削除済みメモが動的に追加されます -->
+            </ul>
+        </div>
+
+        <div class="sidebar-footer">
+            <button class="btn-icon" id="help-btn" title="ヘルプ">
+                <i class="fas fa-question-circle"></i>
+            </button>
+            <button class="btn-icon" id="settings-btn" title="設定">
+                <i class="fas fa-cog"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- Sidebar Toggle (when closed) -->
+    <div class="sidebar-toggle-overlay">
+        <button class="sidebar-toggle-btn" id="sidebar-toggle-open">
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- Main Editor Area -->
+    <main class="editor-container" id="editor-container">
+        <div class="editor-header">
+            <input type="text" id="note-title" class="note-title-input" placeholder="無題のメモ">
+            <div class="editor-actions">
+                <select id="header-font-family" class="font-control" title="フォント">
+                    <option value="sans-serif">ゴシック</option>
+                    <option value="serif">明朝</option>
+                    <option value="monospace">等幅</option>
+                </select>
+                <select id="header-font-size" class="font-control" title="フォントサイズ">
+                    <option value="12">12px</option>
+                    <option value="14">14px</option>
+                    <option value="16" selected>16px</option>
+                    <option value="18">18px</option>
+                    <option value="20">20px</option>
+                    <option value="22">22px</option>
+                    <option value="24">24px</option>
+                </select>
+                <button class="btn-icon" id="toggle-favorite" title="お気に入り">
+                    <i class="far fa-star" id="favorite-icon"></i>
+                </button>
+                <button class="btn-icon" id="open-regex-search" title="正規表現検索">
+                    <i class="fas fa-search-plus"></i>
+                </button>
+                <button class="btn-icon" id="export-note" title="エクスポート">
+                    <i class="fas fa-file-export"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- インライン検索バー -->
+        <div class="inline-search-bar" id="inline-search-bar">
+            <div class="search-row">
+                <input type="text" id="inline-search-input" class="inline-search-input" placeholder="検索...">
+                <button class="btn-primary-small" id="search-btn" title="検索">
+                    <i class="fas fa-search"></i>
+                </button>
+                <label class="inline-search-option">
+                    <input type="checkbox" id="inline-regex-checkbox">
+                    <span>正規表現</span>
+                </label>
+                <button class="btn-icon-small" id="search-prev" title="前へ">
+                    <i class="fas fa-chevron-up"></i>
+                </button>
+                <button class="btn-icon-small" id="search-next" title="次へ">
+                    <i class="fas fa-chevron-down"></i>
+                </button>
+                <span class="search-result-count" id="search-result-count"></span>
+                <button class="btn-icon-small" id="toggle-replace" title="置換">
+                    <i class="fas fa-exchange-alt"></i>
+                </button>
+                <button class="btn-icon-small" id="close-search-bar" title="閉じる">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="replace-row" id="replace-row" style="display: none;">
+                <input type="text" id="inline-replace-input" class="inline-search-input" placeholder="置換...">
+                <button class="btn-secondary-small" id="inline-replace-btn">置換</button>
+                <button class="btn-primary-small" id="inline-replace-all-btn">全て置換</button>
+            </div>
+        </div>
+
+        <!-- タグ表示エリア -->
+        <div class="note-tags-display" id="note-tags-display">
+            <!-- タグが動的に追加されます -->
+        </div>
+
+        <div class="editor-wrapper">
+            <div id="search-highlight-layer" class="search-highlight-layer"></div>
+            <textarea id="note-content" class="note-editor" placeholder="ここにメモを入力..."></textarea>
+            <div id="markdown-preview" class="markdown-preview"></div>
+        </div>
+
+        <!-- タグ入力エリア -->
+        <div class="editor-tags">
+            <div class="tag-input-container">
+                <i class="fas fa-tag"></i>
+                <input type="text" id="tag-input" class="tag-input" placeholder="タグを入力してEnter">
+                <div class="tag-suggestions" id="tag-suggestions">
+                    <!-- タグ候補が動的に追加されます -->
+                </div>
+                <div class="current-tags-inline" id="current-tags-inline">
+                    <!-- タグが動的に追加されます -->
+                </div>
+            </div>
+        </div>
+
+        <div class="editor-footer">
+            <span class="note-meta" id="note-meta"></span>
+        </div>
+    </main>
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settings-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>設定</h2>
+                <button class="btn-close" id="close-settings">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="settings-section">
+                    <h3>テーマ</h3>
+                    <label style="margin-bottom: 12px; display: block;">
+                        <input type="checkbox" id="separate-sidebar-theme" style="margin-right: 8px;">
+                        サイドバーテーマを個別設定
+                    </label>
+                    <div style="margin-bottom: 12px;">
+                        <strong>エディタテーマ</strong>
+                        <div class="theme-selector">
+                            <button class="theme-btn" data-theme="light">ライト</button>
+                            <button class="theme-btn" data-theme="dark">ダーク</button>
+                            <button class="theme-btn" data-theme="blue">ブルー</button>
+                        </div>
+                    </div>
+                    <div id="sidebar-theme-section" style="display: none; margin-bottom: 12px;">
+                        <strong>サイドバーテーマ</strong>
+                        <div class="theme-selector" id="sidebar-theme-selector">
+                            <button class="sidebar-theme-btn" data-theme="light">ライト</button>
+                            <button class="sidebar-theme-btn" data-theme="dark">ダーク</button>
+                            <button class="sidebar-theme-btn" data-theme="blue">ブルー</button>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary" id="open-theme-editor" style="margin-top: 12px; width: 100%;">
+                        <i class="fas fa-palette"></i> 高度なテーマ編集
+                    </button>
+                </div>
+
+                <div class="settings-section">
+                    <h3>フォント</h3>
+                    <label>
+                        フォントファミリー
+                        <select id="font-family">
+                            <option value="sans-serif">ゴシック</option>
+                            <option value="serif">明朝</option>
+                            <option value="monospace">等幅</option>
+                        </select>
+                    </label>
+                    <label>
+                        フォントサイズ
+                        <input type="range" id="font-size" min="12" max="24" step="1" value="16">
+                        <span id="font-size-value">16px</span>
+                    </label>
+                    <label>
+                        行間
+                        <input type="range" id="line-height" min="1.2" max="2.4" step="0.1" value="1.6">
+                        <span id="line-height-value">1.6</span>
+                    </label>
+                </div>
+
+                <div class="settings-section">
+                    <h3>サイドバー</h3>
+                    <label>
+                        メモ一覧のサイズ
+                        <select id="note-list-size">
+                            <option value="compact" selected>コンパクト</option>
+                            <option value="comfortable">標準</option>
+                        </select>
+                    </label>
+                </div>
+
+                <div class="settings-section">
+                    <h3>保存先</h3>
+                    <div class="filesystem-status" id="filesystem-status">
+                        <p class="status-text">現在の保存先: <strong>ブラウザ内 (IndexedDB)</strong></p>
+                    </div>
+                    <button class="btn btn-primary" id="select-directory-btn">
+                        <i class="fas fa-folder-open"></i> ローカルフォルダを選択
+                    </button>
+                    <button class="btn btn-secondary" id="sync-to-filesystem-btn" style="margin-top: 8px; display: none;">
+                        <i class="fas fa-sync"></i> フォルダに同期
+                    </button>
+                    <button class="btn btn-secondary" id="sync-from-filesystem-btn" style="margin-top: 8px; display: none;">
+                        <i class="fas fa-download"></i> フォルダから読み込み
+                    </button>
+                    <button class="btn btn-secondary" id="disable-filesystem-btn" style="margin-top: 8px; display: none;">
+                        <i class="fas fa-times"></i> ローカル保存を無効化
+                    </button>
+                    <p style="font-size: 12px; color: var(--meta-color); margin-top: 12px;">
+                        <i class="fas fa-info-circle"></i> ローカルフォルダを選択すると、メモが.mdファイルとして保存されます
+                    </p>
+                </div>
+
+                <div class="settings-section">
+                    <h3>データ管理</h3>
+                    <button class="btn btn-secondary" id="export-all-btn">
+                        <i class="fas fa-download"></i> 全メモをエクスポート
+                    </button>
+                    <button class="btn btn-secondary" id="import-file" style="margin-top: 8px;">
+                        <i class="fas fa-file-import"></i> ファイルをインポート
+                    </button>
+                    <input type="file" id="file-input" accept=".txt" multiple style="display: none;">
+                    <button class="btn btn-secondary" id="cleanup-history-btn" style="margin-top: 8px;">
+                        <i class="fas fa-broom"></i> 古い履歴を削除
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Help Modal -->
+    <div class="modal" id="help-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fas fa-question-circle"></i> ヘルプ</h2>
+                <button class="btn-close" id="close-help">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <div class="help-section">
+                    <h3><i class="fas fa-keyboard"></i> ショートカットキー</h3>
+                    <table class="shortcut-table">
+                        <tr>
+                            <td><kbd>Ctrl</kbd> + <kbd>N</kbd></td>
+                            <td>新規メモ作成</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd> + <kbd>S</kbd></td>
+                            <td>手動保存</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd> + <kbd>F</kbd></td>
+                            <td>検索</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd> + <kbd>E</kbd></td>
+                            <td>エクスポート</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd> + <kbd>B</kbd></td>
+                            <td>サイドバー開閉</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>Ctrl</kbd> + <kbd>,</kbd></td>
+                            <td>設定を開く</td>
+                        </tr>
+                        <tr>
+                            <td><kbd>F1</kbd></td>
+                            <td>ヘルプを開く</td>
+                        </tr>
+                    </table>
+                    <p style="font-size: 12px; color: var(--meta-color); margin-top: 8px;">
+                        <i class="fas fa-info-circle"></i> Mac では <kbd>Ctrl</kbd> を <kbd>Cmd</kbd> に読み替えてください
+                    </p>
+                </div>
+
+                <div class="help-section">
+                    <h3><i class="fas fa-lightbulb"></i> 主な機能</h3>
+                    <ul class="help-list">
+                        <li><strong>自動保存:</strong> 3秒ごとに自動で保存されます</li>
+                        <li><strong>お気に入り:</strong> 星アイコンで重要なメモをマーク</li>
+                        <li><strong>タグ:</strong> メモに複数のタグを付けて分類（エディタ下部で入力）</li>
+                        <li><strong>フォルダ:</strong> メモをフォルダで整理（サイドバーで管理）</li>
+                        <li><strong>フォント調整:</strong> ヘッダーのドロップダウンで簡単に変更</li>
+                        <li><strong>正規表現検索:</strong> 高度な検索・置換機能</li>
+                        <li><strong>ローカル保存:</strong> txtファイルとしてPCに保存可能</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3><i class="fas fa-database"></i> データについて</h3>
+                    <ul class="help-list">
+                        <li>メモはブラウザの <strong>IndexedDB</strong> に保存されます</li>
+                        <li>ブラウザを閉じてもデータは残ります</li>
+                        <li>プライベートモードでは終了時に削除されます</li>
+                        <li>定期的にエクスポートしてバックアップすることを推奨</li>
+                        <li>ローカルフォルダ保存を有効にすると、txtファイルとして保存できます</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3><i class="fas fa-palette"></i> カスタマイズ</h3>
+                    <ul class="help-list">
+                        <li>3つのプリセットテーマ（ライト/ダーク/ブルー）</li>
+                        <li>高度なテーマエディタで11色をカスタマイズ可能</li>
+                        <li>フォント、サイズ、行間を調整可能</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3><i class="fas fa-exclamation-triangle"></i> トラブルシューティング</h3>
+                    <ul class="help-list">
+                        <li>表示がおかしい → <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>R</kbd> でスーパーリロード</li>
+                        <li>データが消えた → ブラウザのデータを削除していないか確認</li>
+                        <li>保存されない → プライベートモードを使用していないか確認</li>
+                        <li>ローカル保存が使えない → Chrome/Edge/Opera をご利用ください</li>
+                    </ul>
+                </div>
+
+                <div class="help-section">
+                    <h3><i class="fas fa-info-circle"></i> バージョン情報</h3>
+                    <p>OffNote v2.0.0</p>
+                    <p style="font-size: 12px; color: var(--meta-color);">
+                        オフライン対応テキストエディタPWA<br>
+                        Claude Code により実装
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Regex Search Dialog -->
+    <div class="modal" id="regex-search-dialog">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>検索・置換</h2>
+                <button class="btn-close" id="close-regex-dialog">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-mode-toggle">
+                    <label class="search-mode-label">
+                        <input type="checkbox" id="regex-mode-checkbox">
+                        <span>正規表現モード</span>
+                    </label>
+                </div>
+                <label>
+                    検索パターン
+                    <input type="text" id="regex-pattern" class="input-text" placeholder="検索したいテキストを入力">
+                </label>
+                <label>
+                    置換文字列
+                    <input type="text" id="regex-replacement" class="input-text" placeholder="置換後のテキストを入力">
+                </label>
+                <div class="regex-flags" id="regex-flags-container" style="display: none;">
+                    <label><input type="checkbox" id="regex-flag-i" checked> 大文字小文字を区別しない (i)</label>
+                    <label><input type="checkbox" id="regex-flag-m"> 複数行モード (m)</label>
+                    <label><input type="checkbox" id="regex-flag-s"> ドットが改行にマッチ (s)</label>
+                </div>
+                <div class="regex-result" id="regex-result"></div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" id="regex-search-btn">検索</button>
+                    <button class="btn btn-secondary" id="regex-replace-btn">置換</button>
+                    <button class="btn btn-primary" id="regex-replace-all-btn">全て置換</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- History Dialog -->
+    <div class="modal" id="history-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>履歴</h2>
+                <button class="btn-close" id="close-history-dialog">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div id="history-list" class="history-list">
+                    <!-- 履歴が動的に追加されます -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Tags Dialog -->
+    <div class="modal" id="tags-dialog">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>タグを編集</h2>
+                <button class="btn-close" id="close-tags-dialog">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="current-tags" id="current-tags">
+                    <!-- 現在のタグが動的に追加されます -->
+                </div>
+                <label>
+                    新しいタグを追加
+                    <input type="text" id="new-tag-input" class="input-text" placeholder="タグ名を入力">
+                </label>
+                <button class="btn btn-primary" id="add-tag-btn">追加</button>
+                <div class="suggested-tags" id="suggested-tags">
+                    <h4>よく使うタグ</h4>
+                    <!-- サジェストタグが動的に追加されます -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Folder Dialog -->
+    <div class="modal" id="folder-dialog">
+        <div class="modal-content modal-small">
+            <div class="modal-header">
+                <h2>フォルダに移動</h2>
+                <button class="btn-close" id="close-folder-dialog">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="folder-select-list" id="folder-select-list">
+                    <!-- フォルダ選択リストが動的に追加されます -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Theme Editor Dialog -->
+    <div class="modal" id="theme-editor-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>テーマエディタ</h2>
+                <button class="btn-close" id="close-theme-editor">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="theme-colors">
+                    <label>
+                        エディタ背景色
+                        <input type="color" id="theme-editor-bg" class="theme-color-input">
+                    </label>
+                    <label>
+                        テキスト色
+                        <input type="color" id="theme-text-color" class="theme-color-input">
+                    </label>
+                    <label>
+                        プライマリー色
+                        <input type="color" id="theme-primary-color" class="theme-color-input">
+                    </label>
+                    <label>
+                        サイドバー背景色
+                        <input type="color" id="theme-sidebar-bg" class="theme-color-input">
+                    </label>
+                    <label>
+                        ボーダー色
+                        <input type="color" id="theme-border-color" class="theme-color-input">
+                    </label>
+                    <label>
+                        ホバー背景色
+                        <input type="color" id="theme-hover-bg" class="theme-color-input">
+                    </label>
+                    <label>
+                        選択背景色
+                        <input type="color" id="theme-active-bg" class="theme-color-input">
+                    </label>
+                    <label>
+                        メタ情報色
+                        <input type="color" id="theme-meta-color" class="theme-color-input">
+                    </label>
+                    <label>
+                        検索ハイライト色
+                        <input type="color" id="theme-search-highlight" class="theme-color-input" value="#ffff00">
+                    </label>
+                    <label>
+                        検索ハイライト（現在）色
+                        <input type="color" id="theme-search-highlight-current" class="theme-color-input" value="#ffa500">
+                    </label>
+                    <label>
+                        アイコン色
+                        <input type="color" id="theme-icon-color" class="theme-color-input" value="#212529">
+                    </label>
+                </div>
+                <div class="button-group">
+                    <button class="btn btn-secondary" id="reset-theme">リセット</button>
+                    <button class="btn btn-primary" id="save-custom-theme">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Custom Dialog -->
+    <div class="custom-dialog-overlay" id="custom-dialog-overlay">
+        <div class="custom-dialog">
+            <div class="custom-dialog-icon" id="custom-dialog-icon"></div>
+            <div class="custom-dialog-title" id="custom-dialog-title">タイトル</div>
+            <div class="custom-dialog-message" id="custom-dialog-message">メッセージ</div>
+            <div class="custom-dialog-buttons" id="custom-dialog-buttons">
+                <!-- ボタンが動的に追加されます -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/dialog.js"></script>
+    <script src="js/undo.js"></script>
+    <script src="js/db.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/editor.js"></script>
+    <script src="js/extensions.js"></script>
+    <script src="js/filesystem.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

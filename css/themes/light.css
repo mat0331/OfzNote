@@ -1,0 +1,49 @@
+/**
+ * Light Theme
+ */
+
+:root {
+    /* Primary Colors */
+    --primary-color: #007bff;
+    --primary-hover: #0056b3;
+    --primary-text: #ffffff;
+
+    /* Background Colors */
+    --sidebar-bg: #ffffff;
+    --editor-bg: #f8f9fa;
+    --modal-bg: #ffffff;
+    --input-bg: #ffffff;
+    --hover-bg: #f1f3f5;
+    --active-bg: #e7f3ff;
+
+    /* Text Colors */
+    --text-color: #212529;
+    --meta-color: #6c757d;
+    --preview-color: #495057;
+
+    /* Border Colors */
+    --border-color: #dee2e6;
+
+    /* Secondary Colors */
+    --secondary-color: #e9ecef;
+    --secondary-hover: #dee2e6;
+
+    /* Status Colors */
+    --success-color: #28a745;
+    --success-bg: #d4edda;
+    --warning-color: #ffc107;
+    --warning-bg: #fff3cd;
+    --danger-color: #dc3545;
+    --danger-bg: #f8d7da;
+
+    /* Scrollbar */
+    --scrollbar-color: #ced4da;
+    --scrollbar-hover: #adb5bd;
+
+    /* Search highlight */
+    --search-highlight-color: rgba(255, 255, 0, 0.4);
+    --search-highlight-current-color: rgba(255, 165, 0, 0.6);
+
+    /* Icon color */
+    --icon-color: #212529;
+}
