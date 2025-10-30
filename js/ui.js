@@ -131,6 +131,14 @@ const UI = {
             });
         }
 
+        // モバイルメニューボタン
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        if (mobileMenuBtn) {
+            mobileMenuBtn.addEventListener('click', () => {
+                this.toggleSidebar();
+            });
+        }
+
         // Ctrl/Cmd + B: サイドバートグル
         document.addEventListener('keydown', (e) => {
             if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
