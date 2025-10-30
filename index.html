@@ -11,11 +11,10 @@
     <link rel="manifest" href="manifest.json">
 
     <!-- Favicon -->
-    <!-- <link rel="icon" type="image/png" href="icons/icon-192.png">
-    <link rel="apple-touch-icon" href="icons/icon-192.png"> -->
-
-    <!-- Markdown Library (CDN) -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link rel="icon" type="image/x-icon" href="icons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="icons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="icons/apple-touch-icon.png">
 
     <!-- Font Awesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -125,12 +124,13 @@
         <div class="editor-header">
             <input type="text" id="note-title" class="note-title-input" placeholder="無題のメモ" aria-label="メモのタイトル">
             <div class="editor-actions">
-                <select id="header-font-family" class="font-control" title="フォント" aria-label="フォントファミリーを選択">
+                <!-- デスクトップ用：全表示 -->
+                <select id="header-font-family" class="font-control desktop-only" title="フォント" aria-label="フォントファミリーを選択">
                     <option value="sans-serif">ゴシック</option>
                     <option value="serif">明朝</option>
                     <option value="monospace">等幅</option>
                 </select>
-                <select id="header-font-size" class="font-control" title="フォントサイズ" aria-label="フォントサイズを選択">
+                <select id="header-font-size" class="font-control desktop-only" title="フォントサイズ" aria-label="フォントサイズを選択">
                     <option value="12">12px</option>
                     <option value="14">14px</option>
                     <option value="16" selected>16px</option>
@@ -142,12 +142,37 @@
                 <button class="btn-icon" id="toggle-favorite" title="お気に入り" aria-label="お気に入りに追加" aria-pressed="false">
                     <i class="far fa-star" id="favorite-icon" aria-hidden="true"></i>
                 </button>
-                <button class="btn-icon" id="open-regex-search" title="正規表現検索" aria-label="正規表現検索を開く">
+                <button class="btn-icon desktop-only" id="open-regex-search" title="正規表現検索" aria-label="正規表現検索を開く">
                     <i class="fas fa-search-plus" aria-hidden="true"></i>
                 </button>
-                <button class="btn-icon" id="export-note" title="エクスポート" aria-label="メモをエクスポート">
+                <button class="btn-icon desktop-only" id="export-note" title="エクスポート" aria-label="メモをエクスポート">
                     <i class="fas fa-file-export" aria-hidden="true"></i>
                 </button>
+
+                <!-- モバイル用：オーバーフローメニュー -->
+                <div class="editor-overflow mobile-only">
+                    <button class="btn-icon" id="editor-overflow-btn" title="メニュー" aria-label="その他のオプション" aria-expanded="false">
+                        <i class="fas fa-ellipsis-v" aria-hidden="true"></i>
+                    </button>
+                    <div class="editor-overflow-menu" id="editor-overflow-menu" role="menu" aria-hidden="true">
+                        <button class="overflow-menu-item" data-action="font-family" role="menuitem">
+                            <i class="fas fa-font" aria-hidden="true"></i>
+                            <span>フォント</span>
+                        </button>
+                        <button class="overflow-menu-item" data-action="font-size" role="menuitem">
+                            <i class="fas fa-text-height" aria-hidden="true"></i>
+                            <span>サイズ</span>
+                        </button>
+                        <button class="overflow-menu-item" data-action="regex-search" role="menuitem">
+                            <i class="fas fa-search-plus" aria-hidden="true"></i>
+                            <span>正規表現検索</span>
+                        </button>
+                        <button class="overflow-menu-item" data-action="export" role="menuitem">
+                            <i class="fas fa-file-export" aria-hidden="true"></i>
+                            <span>エクスポート</span>
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -191,7 +216,6 @@
         <div class="editor-wrapper">
             <div id="search-highlight-layer" class="search-highlight-layer" aria-hidden="true"></div>
             <textarea id="note-content" class="note-editor" placeholder="ここにメモを入力..." aria-label="メモの内容"></textarea>
-            <div id="markdown-preview" class="markdown-preview" role="complementary" aria-label="マークダウンプレビュー" aria-live="polite"></div>
         </div>
 
         <!-- タグ入力エリア -->
@@ -412,10 +436,10 @@
 
                 <div class="help-section">
                     <h3><i class="fas fa-info-circle"></i> バージョン情報</h3>
-                    <p>OffNote v2.0.0</p>
+                    <p><strong>OfzNote v2.4.0</strong></p>
                     <p style="font-size: 12px; color: var(--meta-color);">
                         オフライン対応テキストエディタPWA<br>
-                        Claude Code により実装
+                        セキュアで高速、アクセシブルな実装
                     </p>
                 </div>
             </div>

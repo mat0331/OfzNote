@@ -172,10 +172,15 @@ const FileSystem = {
             // 結果を表示
             await Dialog.alert(
                 `フォルダとの同期が完了しました。\n\n` +
-                `【インポート】\n${importResult.success}件のtxtファイルを読み込みました\n\n` +
-                `【エクスポート】\n${exportResult.success}件のメモをファイルに保存しました\n\n` +
+                `【インポート】\n` +
+                `  - ${importResult.success}件のtxtファイルを読み込みました\n` +
+                `  - ${importResult.directories || 0}個のサブディレクトリを走査しました\n\n` +
+                `【エクスポート】\n` +
+                `  - ${exportResult.success}件のメモをファイルに保存しました\n\n` +
                 `※IndexedDBのメモデータをクリアしました（FileSystemが唯一のデータソースになります）\n` +
-                `※メタデータを.offnote/metadata.jsonに統合しました`,
+                `※メタデータを.offnote/metadata.jsonに統合しました\n\n` +
+                `※ディレクトリ内のファイルは読み込まれましたが、フォルダは自動作成されません\n` +
+                `※フォルダ機能を使いたい場合は、アプリ内で手動で作成してください`,
                 '同期完了',
                 'success'
             );
@@ -537,22 +542,76 @@ const FileSystem = {
     },
 
     /**
-     * ディレクトリから全メモをインポート
+     * ディレクトリから全メモをインポート（サブディレクトリも含む）
+     * 注: フォルダは自動作成しません。ファイルの読み込みのみ行います。
      */
     async importAllNotes() {
         if (!this.isEnabled || !this.directoryHandle) return;
 
         try {
             const notes = [];
+            let dirCount = 0;
 
-            // ディレクトリ内の全ファイルを走査
+            // ステップ1: ルートディレクトリのファイルを読み込み
             for await (const entry of this.directoryHandle.values()) {
                 if (entry.kind === 'file' && entry.name.endsWith('.txt')) {
                     const note = await this.loadNoteFromFile(entry.name);
                     if (note) {
+                        console.log(`ルートからインポート: ${entry.name}`);
                         notes.push(note);
                     }
                 }
+            }
+
+            // ステップ2: サブディレクトリ内のファイルを読み込み（フォルダは作成しない）
+            for await (const entry of this.directoryHandle.values()) {
+                // 隠しディレクトリをスキップ
+                if (entry.name.startsWith('.')) {
+                    continue;
+                }
+
+                if (entry.kind === 'directory') {
+                    dirCount++;
+                    console.log(`サブディレクトリを走査: ${entry.name}`);
+
+                    const subDirHandle = await this.directoryHandle.getDirectoryHandle(entry.name);
+                    for await (const subEntry of subDirHandle.values()) {
+                        // 隠しファイルをスキップ
+                        if (subEntry.name.startsWith('.') || subEntry.name.endsWith('.meta.json')) {
+                            continue;
+                        }
+
+                        if (subEntry.kind === 'file' && subEntry.name.endsWith('.txt')) {
+                            const note = await this.loadNoteFromFile(subEntry.name, subDirHandle);
+                            if (note) {
+                                // 既存のフォルダIDがメタデータにあればそれを使用
+                                // なければnullのまま（フォルダには属さない）
+                                console.log(`  ${entry.name}/${subEntry.name} からインポート`);
+                                notes.push(note);
+
+                                // メタデータを更新（folderIdは既存の値を保持）
+                                if (note.id && this.metadataCache[note.id]) {
+                                    // 既存のメタデータがある場合はそのまま
+                                } else if (note.id) {
+                                    // 新規の場合はfolderIdなしで登録
+                                    this.metadataCache[note.id] = {
+                                        id: note.id,
+                                        title: note.title,
+                                        isFavorite: note.isFavorite || false,
+                                        folderId: null,
+                                        tags: note.tags || [],
+                                        createdAt: note.createdAt
+                                    };
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // メタデータを保存
+            if (Object.keys(this.metadataCache).length > 0) {
+                await this.saveAllMetadata();
             }
 
             // IndexedDBに保存
@@ -567,7 +626,8 @@ const FileSystem = {
             }
 
             console.log(`ファイルシステムから読み込み: ${successCount}/${notes.length}件`);
-            return { success: successCount, total: notes.length };
+            console.log(`ディレクトリ数: ${dirCount}個`);
+            return { success: successCount, total: notes.length, directories: dirCount };
         } catch (error) {
             console.error('全メモのインポートに失敗:', error);
             throw error;

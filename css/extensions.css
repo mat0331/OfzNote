@@ -194,69 +194,6 @@
     opacity: 1;
 }
 
-/* マークダウンプレビュー */
-.editor-wrapper.split-view {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1px;
-    background: var(--border-color);
-}
-
-.markdown-preview {
-    display: none;
-    padding: 40px 20px;
-    overflow-y: auto;
-    background: var(--editor-bg);
-    color: var(--text-color);
-}
-
-.markdown-preview.visible {
-    display: block;
-}
-
-.markdown-preview h1 {
-    font-size: 32px;
-    margin: 24px 0 16px;
-    border-bottom: 2px solid var(--border-color);
-    padding-bottom: 8px;
-}
-
-.markdown-preview h2 {
-    font-size: 24px;
-    margin: 20px 0 12px;
-}
-
-.markdown-preview h3 {
-    font-size: 20px;
-    margin: 16px 0 8px;
-}
-
-.markdown-preview p {
-    margin: 12px 0;
-    line-height: 1.8;
-}
-
-.markdown-preview code {
-    background: var(--hover-bg);
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 14px;
-}
-
-.markdown-preview a {
-    color: var(--primary-color);
-    text-decoration: none;
-}
-
-.markdown-preview a:hover {
-    text-decoration: underline;
-}
-
-.markdown-preview li {
-    margin: 6px 0 6px 24px;
-}
-
 /* 履歴リスト */
 .history-list {
     max-height: 500px;
@@ -480,10 +417,6 @@
 
 /* レスポンシブ */
 @media (max-width: 768px) {
-    .editor-wrapper.split-view {
-        grid-template-columns: 1fr;
-    }
-
     .theme-colors {
         grid-template-columns: 1fr;
     }

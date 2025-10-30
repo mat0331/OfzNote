@@ -2,7 +2,7 @@
  * Service Worker for OfzNote PWA
  */
 
-const CACHE_NAME = 'ofznote-v2.3.1';
+const CACHE_NAME = 'ofznote-v2.4.0';
 const urlsToCache = [
     './',
     './index.html',
@@ -11,7 +11,8 @@ const urlsToCache = [
     './css/extensions.css',
     './css/themes/light.css',
     './css/themes/dark.css',
-    './css/themes/sepia.css',
+    './css/themes/blue.css',
+    './js/utils.js',
     './js/app.js',
     './js/db.js',
     './js/dialog.js',
@@ -19,7 +20,8 @@ const urlsToCache = [
     './js/storage.js',
     './js/ui.js',
     './js/extensions.js',
-    './js/filesystem.js'
+    './js/filesystem.js',
+    './js/undo.js'
 ];
 
 /**

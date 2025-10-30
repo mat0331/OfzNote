@@ -366,6 +366,40 @@ const UI = {
         window.addEventListener('resize', () => {
             this.checkMobileView();
         });
+
+        // モバイル用オーバーフローメニュー
+        const overflowBtn = document.getElementById('editor-overflow-btn');
+        const overflowMenu = document.getElementById('editor-overflow-menu');
+
+        if (overflowBtn && overflowMenu) {
+            // オーバーフローボタンクリック
+            overflowBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const isExpanded = overflowBtn.getAttribute('aria-expanded') === 'true';
+
+                if (isExpanded) {
+                    this.closeOverflowMenu();
+                } else {
+                    this.openOverflowMenu();
+                }
+            });
+
+            // メニュー項目クリック
+            overflowMenu.querySelectorAll('.overflow-menu-item').forEach(item => {
+                item.addEventListener('click', (e) => {
+                    const action = item.dataset.action;
+                    this.handleOverflowAction(action);
+                    this.closeOverflowMenu();
+                });
+            });
+
+            // メニュー外クリックで閉じる
+            document.addEventListener('click', (e) => {
+                if (!overflowMenu.contains(e.target) && !overflowBtn.contains(e.target)) {
+                    this.closeOverflowMenu();
+                }
+            });
+        }
     },
 
     /**
@@ -1913,6 +1947,94 @@ const UI = {
 
     closeHelp() {
         document.getElementById('help-modal').classList.remove('active');
+    },
+
+    /**
+     * オーバーフローメニューを開く
+     */
+    openOverflowMenu() {
+        const overflowBtn = document.getElementById('editor-overflow-btn');
+        const overflowMenu = document.getElementById('editor-overflow-menu');
+
+        if (overflowBtn && overflowMenu) {
+            overflowMenu.classList.add('active');
+            overflowMenu.setAttribute('aria-hidden', 'false');
+            overflowBtn.setAttribute('aria-expanded', 'true');
+        }
+    },
+
+    /**
+     * オーバーフローメニューを閉じる
+     */
+    closeOverflowMenu() {
+        const overflowBtn = document.getElementById('editor-overflow-btn');
+        const overflowMenu = document.getElementById('editor-overflow-menu');
+
+        if (overflowBtn && overflowMenu) {
+            overflowMenu.classList.remove('active');
+            overflowMenu.setAttribute('aria-hidden', 'true');
+            overflowBtn.setAttribute('aria-expanded', 'false');
+        }
+    },
+
+    /**
+     * オーバーフローメニューのアクションを処理
+     */
+    handleOverflowAction(action) {
+        switch (action) {
+            case 'font-family':
+                this.showFontFamilyDialog();
+                break;
+            case 'font-size':
+                this.showFontSizeDialog();
+                break;
+            case 'regex-search':
+                document.getElementById('open-regex-search')?.click();
+                break;
+            case 'export':
+                document.getElementById('export-note')?.click();
+                break;
+        }
+    },
+
+    /**
+     * フォントファミリー選択ダイアログ
+     */
+    showFontFamilyDialog() {
+        const options = [
+            { label: 'ゴシック', value: 'sans-serif' },
+            { label: '明朝', value: 'serif' },
+            { label: '等幅', value: 'monospace' }
+        ];
+
+        Dialog.select('フォントを選択', options, (value) => {
+            if (value) {
+                this.updateSetting('fontFamily', value);
+                document.getElementById('header-font-family').value = value;
+            }
+        });
+    },
+
+    /**
+     * フォントサイズ選択ダイアログ
+     */
+    showFontSizeDialog() {
+        const options = [
+            { label: '12px', value: '12' },
+            { label: '14px', value: '14' },
+            { label: '16px', value: '16' },
+            { label: '18px', value: '18' },
+            { label: '20px', value: '20' },
+            { label: '22px', value: '22' },
+            { label: '24px', value: '24' }
+        ];
+
+        Dialog.select('フォントサイズを選択', options, (value) => {
+            if (value) {
+                this.updateSetting('fontSize', parseInt(value));
+                document.getElementById('header-font-size').value = value;
+            }
+        });
     },
 
     async changeTheme(theme) {

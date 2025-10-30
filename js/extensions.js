@@ -1,150 +1,13 @@
 /**
  * 拡張機能モジュール
- * - マークダウンプレビュー
+ * - インライン検索
  * - 正規表現検索・置換
  * - 高度なテーマエディタ
  */
 
+'use strict';
+
 const Extensions = {
-    // ==================== マークダウンプレビュー ====================
-
-    markdown: {
-        isPreviewMode: false,
-        isSplitView: false,
-
-        /**
-         * 初期化
-         */
-        init() {
-            this.bindEvents();
-        },
-
-        /**
-         * イベントをバインド
-         */
-        bindEvents() {
-            const toggleBtn = document.getElementById('toggle-markdown-preview');
-            if (toggleBtn) {
-                toggleBtn.addEventListener('click', () => this.togglePreview());
-            }
-
-            const splitBtn = document.getElementById('toggle-split-view');
-            if (splitBtn) {
-                splitBtn.addEventListener('click', () => this.toggleSplitView());
-            }
-        },
-
-        /**
-         * プレビューを切り替え
-         */
-        togglePreview() {
-            this.isPreviewMode = !this.isPreviewMode;
-            this.renderPreview();
-        },
-
-        /**
-         * 分割ビューを切り替え
-         */
-        toggleSplitView() {
-            this.isSplitView = !this.isSplitView;
-            const editorWrapper = document.querySelector('.editor-wrapper');
-            const preview = document.getElementById('markdown-preview');
-
-            if (this.isSplitView) {
-                editorWrapper.classList.add('split-view');
-                preview.classList.add('visible');
-                this.renderPreview();
-                this.autoUpdatePreview();
-            } else {
-                editorWrapper.classList.remove('split-view');
-                preview.classList.remove('visible');
-            }
-        },
-
-        /**
-         * プレビューをレンダリング
-         */
-        renderPreview() {
-            const content = document.getElementById('note-content').value;
-            const preview = document.getElementById('markdown-preview');
-
-            if (!preview) return;
-
-            // 簡易マークダウン変換（marked.jsが利用可能な場合はそれを使用）
-            const html = this.convertMarkdown(content);
-            preview.innerHTML = html;
-        },
-
-        /**
-         * 自動プレビュー更新
-         */
-        autoUpdatePreview() {
-            if (this.isSplitView) {
-                const contentTextarea = document.getElementById('note-content');
-                contentTextarea.addEventListener('input', () => {
-                    this.renderPreview();
-                });
-            }
-        },
-
-        /**
-         * マークダウンをHTMLに変換（簡易版）
-         */
-        convertMarkdown(text) {
-            // marked.jsが読み込まれている場合はそれを使用
-            if (typeof marked !== 'undefined') {
-                // セキュアな設定でHTMLをサニタイズ
-                marked.setOptions({
-                    breaks: true,
-                    gfm: true,
-                    sanitize: false, // marked v4以降では非推奨だが、XSS対策として危険なタグを削除
-                    mangle: false,
-                    headerIds: false
-                });
-
-                // パース後、scriptタグとiframeタグを削除
-                let html = marked.parse(text);
-                html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
-                html = html.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '');
-                html = html.replace(/on\w+\s*=\s*["'][^"']*["']/gi, ''); // イベントハンドラ削除
-                html = html.replace(/javascript:/gi, ''); // javascript:プロトコル削除
-
-                return html;
-            }
-
-            // フォールバック：簡易変換
-            let html = text;
-
-            // 見出し
-            html = html.replace(/^### (.*$)/gim, '<h3>$1</h3>');
-            html = html.replace(/^## (.*$)/gim, '<h2>$1</h2>');
-            html = html.replace(/^# (.*$)/gim, '<h1>$1</h1>');
-
-            // 太字
-            html = html.replace(/\*\*(.*?)\*\*/gim, '<strong>$1</strong>');
-            html = html.replace(/__(.*?)__/gim, '<strong>$1</strong>');
-
-            // 斜体
-            html = html.replace(/\*(.*?)\*/gim, '<em>$1</em>');
-            html = html.replace(/_(.*?)_/gim, '<em>$1</em>');
-
-            // リンク
-            html = html.replace(/\[(.*?)\]\((.*?)\)/gim, '<a href="$2" target="_blank">$1</a>');
-
-            // リスト
-            html = html.replace(/^\* (.*$)/gim, '<li>$1</li>');
-            html = html.replace(/^\- (.*$)/gim, '<li>$1</li>');
-
-            // コードブロック
-            html = html.replace(/`([^`]+)`/gim, '<code>$1</code>');
-
-            // 改行
-            html = html.replace(/\n/gim, '<br>');
-
-            return html;
-        }
-    },
-
     // ==================== インライン検索 ====================
 
     inlineSearch: {
@@ -1025,7 +888,6 @@ const Extensions = {
      * 全拡張機能を初期化
      */
     init() {
-        this.markdown.init();
         this.inlineSearch.init();
         this.regex.init();
         this.themeEditor.init();

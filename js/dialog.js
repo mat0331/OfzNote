@@ -161,6 +161,67 @@ const Dialog = {
     },
 
     /**
+     * 選択ダイアログを表示
+     */
+    select(title, options, callback) {
+        const selectId = 'custom-dialog-select-' + Date.now();
+        const optionsHtml = options.map(opt =>
+            `<option value="${Utils.escapeHtml(opt.value)}">${Utils.escapeHtml(opt.label)}</option>`
+        ).join('');
+
+        const messageWithSelect = `
+            <select id="${selectId}" class="custom-dialog-select" style="
+                width: 100%;
+                padding: 12px;
+                margin-top: 12px;
+                border: 1px solid var(--border-color);
+                border-radius: 6px;
+                background: var(--input-bg);
+                color: var(--text-color);
+                font-size: 16px;
+                cursor: pointer;
+            ">
+                ${optionsHtml}
+            </select>
+        `;
+
+        this.show({
+            title,
+            message: messageWithSelect,
+            type: 'info',
+            allowHtml: true,
+            buttons: [
+                {
+                    text: 'キャンセル',
+                    className: 'secondary',
+                    callback: () => {
+                        this.close();
+                        callback(null);
+                    }
+                },
+                {
+                    text: 'OK',
+                    className: 'primary',
+                    callback: () => {
+                        const select = document.getElementById(selectId);
+                        const value = select ? select.value : null;
+                        this.close();
+                        callback(value);
+                    }
+                }
+            ]
+        });
+
+        // セレクトボックスにフォーカス
+        setTimeout(() => {
+            const select = document.getElementById(selectId);
+            if (select) {
+                select.focus();
+            }
+        }, 100);
+    },
+
+    /**
      * ダイアログを表示
      */
     show(options) {
