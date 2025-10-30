@@ -97,9 +97,15 @@ const DB = {
     },
 
     /**
-     * UUIDを生成
+     * UUIDを生成（cryptographically strong）
      */
     generateUUID() {
+        // Utils.generateUUID()を使用（より安全な実装）
+        if (typeof Utils !== 'undefined') {
+            return Utils.generateUUID();
+        }
+
+        // フォールバック: 従来の実装
         return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
             const r = Math.random() * 16 | 0;
             const v = c === 'x' ? r : (r & 0x3 | 0x8);

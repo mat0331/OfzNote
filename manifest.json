@@ -1,15 +1,34 @@
 {
   "name": "OfzNote - オフラインメモアプリ",
   "short_name": "OfzNote",
-  "description": "オフラインで使えるシンプルなテキストエディタPWA",
+  "description": "オフラインで使えるシンプルで高機能なテキストエディタPWA。自動保存、タグ、フォルダ、正規表現検索に対応",
   "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#007bff",
-  "orientation": "any",
+  "orientation": "portrait-primary",
+  "categories": ["productivity", "utilities", "lifestyle"],
+  "lang": "ja",
+  "dir": "ltr",
   "icons": [],
-  "categories": ["productivity", "utilities"],
   "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "新規メモ作成",
+      "short_name": "新規メモ",
+      "description": "新しいメモを作成します",
+      "url": "./index.html?action=new",
+      "icons": []
+    },
+    {
+      "name": "検索",
+      "short_name": "検索",
+      "description": "メモを検索します",
+      "url": "./index.html?action=search",
+      "icons": []
+    }
+  ],
   "related_applications": [],
   "prefer_related_applications": false
 }

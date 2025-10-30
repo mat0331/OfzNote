@@ -2,6 +2,8 @@
  * UI制御モジュール（拡張版）
  */
 
+'use strict';
+
 const UI = {
     currentSortBy: 'updatedAt',
     searchQuery: '',
@@ -18,6 +20,8 @@ const UI = {
         this.refreshAllViews();
         this.loadSettings();
         this.checkMobileView();
+        this.applySystemColorScheme();
+        this.listenToSystemColorScheme();
     },
 
     /**
@@ -368,13 +372,41 @@ const UI = {
      * タブイベントをバインド
      */
     bindTabEvents() {
-        document.querySelectorAll('.tab-btn').forEach(btn => {
+        document.querySelectorAll('.tab-btn').forEach((btn, index) => {
             btn.addEventListener('click', (e) => {
                 // ボタン要素を確実に取得（アイコンをクリックしてもOK）
                 const button = e.currentTarget;
                 const tab = button.dataset.tab;
                 if (tab) {
                     this.switchTab(tab);
+                }
+            });
+
+            // キーボードナビゲーション（アクセシビリティ対応）
+            btn.addEventListener('keydown', (e) => {
+                const buttons = Array.from(document.querySelectorAll('.tab-btn'));
+                const currentIndex = buttons.indexOf(e.currentTarget);
+
+                switch (e.key) {
+                    case 'ArrowLeft':
+                    case 'ArrowUp':
+                        e.preventDefault();
+                        const prevBtn = buttons[(currentIndex - 1 + buttons.length) % buttons.length];
+                        prevBtn.focus();
+                        prevBtn.click();
+                        break;
+                    case 'ArrowRight':
+                    case 'ArrowDown':
+                        e.preventDefault();
+                        const nextBtn = buttons[(currentIndex + 1) % buttons.length];
+                        nextBtn.focus();
+                        nextBtn.click();
+                        break;
+                    case 'Enter':
+                    case ' ':
+                        e.preventDefault();
+                        e.currentTarget.click();
+                        break;
                 }
             });
         });
@@ -537,28 +569,30 @@ const UI = {
 
     /**
      * メモ一覧をレンダリング（フォルダ階層表示）
+     * パフォーマンス改善: DocumentFragmentを使用
      */
     async renderNoteList(notes, listId) {
         const noteList = document.getElementById(listId);
-        noteList.innerHTML = '';
 
         if (notes.length === 0) {
             noteList.innerHTML = '<li class="note-list-empty">メモがありません</li>';
             return;
         }
 
+        // DocumentFragmentを使用してDOMの再描画を最小化
+        const fragment = document.createDocumentFragment();
+
         // メモ一覧タブ以外（お気に入りなど）はフラット表示
         if (listId !== 'note-list') {
-            this.renderFlatNoteList(notes, noteList);
+            this.renderFlatNoteList(notes, fragment);
+            noteList.innerHTML = '';
+            noteList.appendChild(fragment);
             return;
         }
 
         // フォルダ情報を取得
         const folders = await DB.getAllFolders();
-        const folderMap = {};
-        folders.forEach(folder => {
-            folderMap[folder.id] = folder;
-        });
+        const folderMap = new Map(folders.map(f => [f.id, f])); // Mapを使用
 
         // フォルダごとにメモをグループ化
         const grouped = {
@@ -579,16 +613,20 @@ const UI = {
         // フォルダごとに表示（空のフォルダも表示）
         folders.forEach(folder => {
             const folderNotes = grouped[folder.id] || [];
-            this.renderFolderGroup(noteList, folder, folderNotes, folder.name);
+            this.renderFolderGroup(fragment, folder, folderNotes, folder.name);
         });
 
         // ルートレベルのメモを最後に表示
         if (grouped.root.length > 0) {
             grouped.root.forEach(note => {
                 const li = this.createNoteListItem(note);
-                noteList.appendChild(li);
+                fragment.appendChild(li);
             });
         }
+
+        // 一度のDOM更新で全て反映
+        noteList.innerHTML = '';
+        noteList.appendChild(fragment);
     },
 
     /**
@@ -1963,6 +2001,45 @@ const UI = {
             list.classList.remove('compact', 'comfortable');
             list.classList.add(size);
         });
+    },
+
+    /**
+     * システムのカラースキームを適用（ダークモード自動検出）
+     */
+    applySystemColorScheme() {
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const savedTheme = localStorage.getItem('offnote_theme');
+
+        // ユーザーがテーマを設定していない場合のみ、システムの設定を適用
+        if (!savedTheme && prefersDark) {
+            this.changeTheme('dark');
+        }
+    },
+
+    /**
+     * システムのカラースキーム変更を監視
+     */
+    listenToSystemColorScheme() {
+        const darkModeQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+        // モダンブラウザ用
+        if (darkModeQuery.addEventListener) {
+            darkModeQuery.addEventListener('change', (e) => {
+                // ユーザーがカスタムテーマを設定していない場合のみ変更
+                const hasCustomTheme = localStorage.getItem('offnote_custom_theme');
+                if (!hasCustomTheme) {
+                    this.changeTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+        } else {
+            // 旧ブラウザ用（Safari等）
+            darkModeQuery.addListener((e) => {
+                const hasCustomTheme = localStorage.getItem('offnote_custom_theme');
+                if (!hasCustomTheme) {
+                    this.changeTheme(e.matches ? 'dark' : 'light');
+                }
+            });
+        }
     },
 
     async loadSettings() {

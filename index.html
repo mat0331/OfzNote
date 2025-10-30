@@ -27,48 +27,48 @@
 </head>
 <body>
     <!-- Sidebar -->
-    <aside class="sidebar" id="sidebar">
+    <aside class="sidebar" id="sidebar" role="complementary" aria-label="サイドバー">
         <div class="sidebar-header">
             <h1 class="app-title">OfzNote</h1>
-            <button class="btn-icon" id="toggle-sidebar" title="サイドバーを閉じる">
-                <i class="fas fa-bars"></i>
+            <button class="btn-icon" id="toggle-sidebar" title="サイドバーを閉じる" aria-label="サイドバーを閉じる" aria-expanded="true">
+                <i class="fas fa-bars" aria-hidden="true"></i>
             </button>
         </div>
 
         <div class="sidebar-actions">
-            <button class="btn btn-primary" id="new-note">
-                <i class="fas fa-plus"></i> 新規メモ
+            <button class="btn btn-primary" id="new-note" aria-label="新規メモを作成">
+                <i class="fas fa-plus" aria-hidden="true"></i> 新規メモ
             </button>
-            <div class="search-box">
-                <input type="text" id="search-input" placeholder="検索..." class="search-input">
-                <i class="fas fa-search search-icon"></i>
+            <div class="search-box" role="search">
+                <input type="text" id="search-input" placeholder="検索..." class="search-input" aria-label="メモを検索">
+                <i class="fas fa-search search-icon" aria-hidden="true"></i>
             </div>
         </div>
 
         <!-- フォルダ/フィルター タブ -->
-        <div class="sidebar-tabs">
-            <button class="tab-btn active" data-tab="all"><i class="fas fa-list"></i></button>
-            <button class="tab-btn" data-tab="favorites"><i class="fas fa-star"></i></button>
-            <button class="tab-btn" data-tab="tags"><i class="fas fa-tags"></i></button>
-            <button class="tab-btn" data-tab="trash"><i class="fas fa-trash"></i></button>
+        <div class="sidebar-tabs" role="tablist" aria-label="メモビュー切り替え">
+            <button class="tab-btn active" data-tab="all" role="tab" aria-selected="true" aria-controls="tab-all" aria-label="全メモ"><i class="fas fa-list" aria-hidden="true"></i></button>
+            <button class="tab-btn" data-tab="favorites" role="tab" aria-selected="false" aria-controls="tab-favorites" aria-label="お気に入り"><i class="fas fa-star" aria-hidden="true"></i></button>
+            <button class="tab-btn" data-tab="tags" role="tab" aria-selected="false" aria-controls="tab-tags" aria-label="タグ"><i class="fas fa-tags" aria-hidden="true"></i></button>
+            <button class="tab-btn" data-tab="trash" role="tab" aria-selected="false" aria-controls="tab-trash" aria-label="ゴミ箱"><i class="fas fa-trash" aria-hidden="true"></i></button>
         </div>
 
         <!-- 全メモビュー -->
-        <div class="tab-content active" id="tab-all">
+        <div class="tab-content active" id="tab-all" role="tabpanel" aria-labelledby="tab-all">
             <div class="note-list-header">
                 <span>メモ一覧</span>
                 <div class="note-list-controls">
-                    <button class="btn-icon-small" id="new-folder" title="新規フォルダ">
-                        <i class="fas fa-folder-plus"></i>
+                    <button class="btn-icon-small" id="new-folder" title="新規フォルダ" aria-label="新規フォルダを作成">
+                        <i class="fas fa-folder-plus" aria-hidden="true"></i>
                     </button>
-                    <select id="sort-select" class="sort-select">
+                    <select id="sort-select" class="sort-select" aria-label="並び替え">
                         <option value="updated">更新順</option>
                         <option value="created">作成順</option>
                         <option value="title">タイトル順</option>
                     </select>
                 </div>
             </div>
-            <ul class="note-list" id="note-list">
+            <ul class="note-list" id="note-list" role="list" aria-label="メモ一覧">
                 <!-- メモ一覧が動的に追加されます -->
             </ul>
         </div>
@@ -121,16 +121,16 @@
     </div>
 
     <!-- Main Editor Area -->
-    <main class="editor-container" id="editor-container">
+    <main class="editor-container" id="editor-container" role="main" aria-label="エディタ">
         <div class="editor-header">
-            <input type="text" id="note-title" class="note-title-input" placeholder="無題のメモ">
+            <input type="text" id="note-title" class="note-title-input" placeholder="無題のメモ" aria-label="メモのタイトル">
             <div class="editor-actions">
-                <select id="header-font-family" class="font-control" title="フォント">
+                <select id="header-font-family" class="font-control" title="フォント" aria-label="フォントファミリーを選択">
                     <option value="sans-serif">ゴシック</option>
                     <option value="serif">明朝</option>
                     <option value="monospace">等幅</option>
                 </select>
-                <select id="header-font-size" class="font-control" title="フォントサイズ">
+                <select id="header-font-size" class="font-control" title="フォントサイズ" aria-label="フォントサイズを選択">
                     <option value="12">12px</option>
                     <option value="14">14px</option>
                     <option value="16" selected>16px</option>
@@ -139,14 +139,14 @@
                     <option value="22">22px</option>
                     <option value="24">24px</option>
                 </select>
-                <button class="btn-icon" id="toggle-favorite" title="お気に入り">
-                    <i class="far fa-star" id="favorite-icon"></i>
+                <button class="btn-icon" id="toggle-favorite" title="お気に入り" aria-label="お気に入りに追加" aria-pressed="false">
+                    <i class="far fa-star" id="favorite-icon" aria-hidden="true"></i>
                 </button>
-                <button class="btn-icon" id="open-regex-search" title="正規表現検索">
-                    <i class="fas fa-search-plus"></i>
+                <button class="btn-icon" id="open-regex-search" title="正規表現検索" aria-label="正規表現検索を開く">
+                    <i class="fas fa-search-plus" aria-hidden="true"></i>
                 </button>
-                <button class="btn-icon" id="export-note" title="エクスポート">
-                    <i class="fas fa-file-export"></i>
+                <button class="btn-icon" id="export-note" title="エクスポート" aria-label="メモをエクスポート">
+                    <i class="fas fa-file-export" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
@@ -189,9 +189,9 @@
         </div>
 
         <div class="editor-wrapper">
-            <div id="search-highlight-layer" class="search-highlight-layer"></div>
-            <textarea id="note-content" class="note-editor" placeholder="ここにメモを入力..."></textarea>
-            <div id="markdown-preview" class="markdown-preview"></div>
+            <div id="search-highlight-layer" class="search-highlight-layer" aria-hidden="true"></div>
+            <textarea id="note-content" class="note-editor" placeholder="ここにメモを入力..." aria-label="メモの内容"></textarea>
+            <div id="markdown-preview" class="markdown-preview" role="complementary" aria-label="マークダウンプレビュー" aria-live="polite"></div>
         </div>
 
         <!-- タグ入力エリア -->
@@ -588,6 +588,7 @@
     </div>
 
     <!-- Scripts -->
+    <script src="js/utils.js"></script>
     <script src="js/dialog.js"></script>
     <script src="js/undo.js"></script>
     <script src="js/db.js"></script>

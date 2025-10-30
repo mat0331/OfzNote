@@ -93,7 +93,23 @@ const Extensions = {
         convertMarkdown(text) {
             // marked.jsが読み込まれている場合はそれを使用
             if (typeof marked !== 'undefined') {
-                return marked.parse(text);
+                // セキュアな設定でHTMLをサニタイズ
+                marked.setOptions({
+                    breaks: true,
+                    gfm: true,
+                    sanitize: false, // marked v4以降では非推奨だが、XSS対策として危険なタグを削除
+                    mangle: false,
+                    headerIds: false
+                });
+
+                // パース後、scriptタグとiframeタグを削除
+                let html = marked.parse(text);
+                html = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+                html = html.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '');
+                html = html.replace(/on\w+\s*=\s*["'][^"']*["']/gi, ''); // イベントハンドラ削除
+                html = html.replace(/javascript:/gi, ''); // javascript:プロトコル削除
+
+                return html;
             }
 
             // フォールバック：簡易変換
@@ -296,7 +312,7 @@ const Extensions = {
         /**
          * 検索
          */
-        search() {
+        async search() {
             const pattern = document.getElementById('inline-search-input').value;
             const content = document.getElementById('note-content');
             const isRegex = document.getElementById('inline-regex-checkbox').checked;
@@ -312,14 +328,22 @@ const Extensions = {
 
             try {
                 if (isRegex) {
-                    // 正規表現検索
-                    const regex = new RegExp(pattern, 'gi');
-                    let match;
-                    while ((match = regex.exec(content.value)) !== null) {
-                        this.matches.push({
-                            index: match.index,
-                            length: match[0].length
-                        });
+                    // 正規表現の安全性チェック
+                    if (!Utils.isSafeRegex(pattern)) {
+                        Dialog.alert('複雑すぎる正規表現です。より単純なパターンを使用してください。', 'エラー', 'error');
+                        return;
+                    }
+
+                    // タイムアウト付きで正規表現を実行
+                    try {
+                        this.matches = await Utils.execRegexWithTimeout(pattern, content.value, 'gi', 1000);
+                    } catch (error) {
+                        console.error('正規表現エラー:', error);
+                        Dialog.alert(error.message || '正規表現の実行に失敗しました', 'エラー', 'error');
+                        this.matches = [];
+                        this.currentIndex = -1;
+                        this.updateResultCount();
+                        return;
                     }
                 } else {
                     // 通常検索
@@ -615,7 +639,7 @@ const Extensions = {
         /**
          * 検索
          */
-        search() {
+        async search() {
             const pattern = document.getElementById('regex-pattern').value;
             const content = document.getElementById('note-content');
             const isRegexMode = document.getElementById('regex-mode-checkbox').checked;
@@ -627,6 +651,12 @@ const Extensions = {
 
             try {
                 if (isRegexMode) {
+                    // 正規表現の安全性チェック
+                    if (!Utils.isSafeRegex(pattern)) {
+                        this.showResult('複雑すぎる正規表現です', true);
+                        return;
+                    }
+
                     // 正規表現検索
                     const flags = this.getFlags();
                     const regex = new RegExp(pattern, flags);

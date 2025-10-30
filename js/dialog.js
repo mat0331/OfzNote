@@ -2,12 +2,15 @@
  * カスタムダイアログシステム
  */
 
+'use strict';
+
 const Dialog = {
     overlay: null,
     icon: null,
     title: null,
     message: null,
     buttons: null,
+    lastActiveElement: null,
 
     /**
      * 初期化
@@ -22,6 +25,13 @@ const Dialog = {
         // オーバーレイクリックで閉じる
         this.overlay.addEventListener('click', (e) => {
             if (e.target === this.overlay) {
+                this.close();
+            }
+        });
+
+        // Escキーで閉じる
+        this.overlay.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
                 this.close();
             }
         });
@@ -86,11 +96,13 @@ const Dialog = {
      */
     prompt(message, title = '入力', defaultValue = '') {
         return new Promise((resolve) => {
-            // カスタム入力ダイアログを作成
+            // カスタム入力ダイアログを作成（XSS対策）
             const inputId = 'custom-dialog-input-' + Date.now();
+            const safeMessage = Utils.escapeHtml(message);
+            const safeDefaultValue = Utils.escapeHtml(defaultValue);
             const messageWithInput = `
-                ${message}
-                <input type="text" id="${inputId}" class="custom-dialog-input" value="${defaultValue}" style="
+                ${safeMessage}
+                <input type="text" id="${inputId}" class="custom-dialog-input" value="${safeDefaultValue}" style="
                     width: 100%;
                     padding: 10px;
                     margin-top: 12px;
@@ -106,6 +118,7 @@ const Dialog = {
                 title,
                 message: messageWithInput,
                 type: 'info',
+                allowHtml: true,
                 buttons: [
                     {
                         text: 'キャンセル',
@@ -151,13 +164,27 @@ const Dialog = {
      * ダイアログを表示
      */
     show(options) {
-        const { title, message, type = 'info', buttons = [] } = options;
+        const { title, message, type = 'info', buttons = [], allowHtml = false } = options;
 
-        // タイトルを設定
+        // 最後にフォーカスがあった要素を保存
+        this.lastActiveElement = document.activeElement;
+
+        // タイトルを設定（XSS対策）
         this.title.textContent = title;
 
-        // メッセージを設定
-        this.message.innerHTML = message;
+        // メッセージを設定（XSS対策）
+        if (allowHtml) {
+            // HTMLを許可する場合は、危険なタグを削除
+            let sanitizedMessage = message;
+            sanitizedMessage = sanitizedMessage.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '');
+            sanitizedMessage = sanitizedMessage.replace(/<iframe\b[^<]*(?:(?!<\/iframe>)<[^<]*)*<\/iframe>/gi, '');
+            sanitizedMessage = sanitizedMessage.replace(/on\w+\s*=\s*["'][^"']*["']/gi, '');
+            sanitizedMessage = sanitizedMessage.replace(/javascript:/gi, '');
+            this.message.innerHTML = sanitizedMessage;
+        } else {
+            // テキストとして設定（デフォルト）
+            this.message.textContent = message;
+        }
 
         // アイコンを設定
         this.icon.className = `custom-dialog-icon ${type}`;
@@ -181,6 +208,9 @@ const Dialog = {
 
         // オーバーレイを表示
         this.overlay.classList.add('active');
+
+        // フォーカストラップを実装
+        this.implementFocusTrap();
     },
 
     /**
@@ -188,5 +218,52 @@ const Dialog = {
      */
     close() {
         this.overlay.classList.remove('active');
+
+        // 前回フォーカスがあった要素に戻す
+        if (this.lastActiveElement) {
+            this.lastActiveElement.focus();
+            this.lastActiveElement = null;
+        }
+    },
+
+    /**
+     * フォーカストラップを実装（アクセシビリティ対応）
+     */
+    implementFocusTrap() {
+        // ダイアログ内のフォーカス可能な要素を取得
+        const focusableElements = this.overlay.querySelectorAll(
+            'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"]):not([disabled])'
+        );
+
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        // キーボードイベントのハンドラ
+        const handleKeyDown = (e) => {
+            if (e.key === 'Tab') {
+                if (e.shiftKey) {
+                    // Shift+Tab: 最初の要素から前に行こうとしたら最後へ
+                    if (document.activeElement === firstElement) {
+                        e.preventDefault();
+                        lastElement.focus();
+                    }
+                } else {
+                    // Tab: 最後の要素から次に行こうとしたら最初へ
+                    if (document.activeElement === lastElement) {
+                        e.preventDefault();
+                        firstElement.focus();
+                    }
+                }
+            }
+        };
+
+        // 既存のリスナーを削除して新しいものを追加
+        this.overlay.removeEventListener('keydown', handleKeyDown);
+        this.overlay.addEventListener('keydown', handleKeyDown);
+
+        // 最初の要素にフォーカス
+        setTimeout(() => firstElement.focus(), 100);
     }
 };
