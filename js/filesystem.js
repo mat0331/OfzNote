@@ -464,14 +464,18 @@ const FileSystem = {
                         continue;
                     }
 
-                    // サブディレクトリ内のファイルを読み込み（既存フォルダのみ認識）
-                    const existingFolder = await DB.getFolderByName(entry.name);
-                    const folderId = existingFolder ? existingFolder.id : null;
+                    // サブディレクトリ内のファイルを読み込み（ディレクトリをフォルダとして作成）
+                    let existingFolder = await DB.getFolderByName(entry.name);
+                    let folderId;
 
                     if (existingFolder) {
+                        folderId = existingFolder.id;
                         console.log(`サブディレクトリ: ${entry.name} → 既存フォルダ「${existingFolder.name}」(ID: ${folderId})に紐付け`);
                     } else {
-                        console.log(`サブディレクトリ: ${entry.name} → 既存フォルダなし（ファイルのみ読み込み）`);
+                        // 新規フォルダを作成
+                        const newFolder = await DB.createFolder(entry.name);
+                        folderId = newFolder.id;
+                        console.log(`サブディレクトリ: ${entry.name} → 新規フォルダ「${newFolder.name}」(ID: ${folderId})を作成`);
                     }
 
                     const subDirHandle = await this.directoryHandle.getDirectoryHandle(entry.name);
@@ -484,9 +488,9 @@ const FileSystem = {
                         if (subEntry.kind === 'file' && subEntry.name.endsWith('.txt')) {
                             const note = await this.loadNoteFromFile(subEntry.name, subDirHandle);
                             if (note) {
-                                // 既存フォルダがあればそのIDを設定
+                                // フォルダIDを設定
                                 note.folderId = folderId;
-                                console.log(`  ${entry.name}/${subEntry.name} (ID: ${note.id}, フォルダID: ${folderId || 'なし'})`);
+                                console.log(`  ${entry.name}/${subEntry.name} (ID: ${note.id}, フォルダID: ${folderId})`);
                                 if (!seenIds.has(note.id)) {
                                     seenIds.add(note.id);
                                     notes.push(note);
@@ -574,7 +578,7 @@ const FileSystem = {
                 }
             }
 
-            // ステップ2: サブディレクトリ内のファイルを読み込み（既存フォルダのみ認識）
+            // ステップ2: サブディレクトリ内のファイルを読み込み（ディレクトリをフォルダとして作成）
             for await (const entry of this.directoryHandle.values()) {
                 // 隠しディレクトリをスキップ
                 if (entry.name.startsWith('.')) {
@@ -584,14 +588,18 @@ const FileSystem = {
                 if (entry.kind === 'directory') {
                     dirCount++;
 
-                    // DBから同名のフォルダを検索
-                    const existingFolder = await DB.getFolderByName(entry.name);
-                    const folderId = existingFolder ? existingFolder.id : null;
+                    // DBから同名のフォルダを検索、なければ作成
+                    let existingFolder = await DB.getFolderByName(entry.name);
+                    let folderId;
 
                     if (existingFolder) {
+                        folderId = existingFolder.id;
                         console.log(`サブディレクトリを走査: ${entry.name} → 既存フォルダ「${existingFolder.name}」(ID: ${folderId})に紐付け`);
                     } else {
-                        console.log(`サブディレクトリを走査: ${entry.name} → 既存フォルダなし（ファイルのみ読み込み）`);
+                        // 新規フォルダを作成
+                        const newFolder = await DB.createFolder(entry.name);
+                        folderId = newFolder.id;
+                        console.log(`サブディレクトリを走査: ${entry.name} → 新規フォルダ「${newFolder.name}」(ID: ${folderId})を作成`);
                     }
 
                     const subDirHandle = await this.directoryHandle.getDirectoryHandle(entry.name);
@@ -604,10 +612,10 @@ const FileSystem = {
                         if (subEntry.kind === 'file' && subEntry.name.endsWith('.txt')) {
                             const note = await this.loadNoteFromFile(subEntry.name, subDirHandle);
                             if (note) {
-                                // 既存フォルダがあればそのIDを設定
+                                // フォルダIDを設定
                                 note.folderId = folderId;
 
-                                console.log(`  ${entry.name}/${subEntry.name} からインポート (フォルダID: ${folderId || 'なし'})`);
+                                console.log(`  ${entry.name}/${subEntry.name} からインポート (フォルダID: ${folderId})`);
                                 notes.push(note);
 
                                 // メタデータを更新
@@ -616,7 +624,7 @@ const FileSystem = {
                                         id: note.id,
                                         title: note.title,
                                         isFavorite: note.isFavorite || false,
-                                        folderId: folderId,  // 既存フォルダIDまたはnull
+                                        folderId: folderId,
                                         tags: note.tags || [],
                                         createdAt: note.createdAt
                                     };
